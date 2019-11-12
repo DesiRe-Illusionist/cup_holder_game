@@ -1,11 +1,9 @@
-
 fy = 0;
 my = 0;
 by = 0;
 dec = 300;
 $(document).on("keydown", (e) => {
     if (e.which == 38) {
-
         //UP
         if (fy + dec <= 0) {
             $("#front").transition({ y: fy + dec + "px" }, "linear")
@@ -17,7 +15,6 @@ $(document).on("keydown", (e) => {
         } else {
         }
     } else if (e.which == 40) {
-
         //DOWN
         if (fy - dec >= -7000) {
             $("#front").transition({ y: fy - dec + "px" }, "linear")
