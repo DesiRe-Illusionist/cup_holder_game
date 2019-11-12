@@ -30,24 +30,30 @@ function draw() {
     
     noStroke();
     
-    translate(updateFlowerX(), height/3);
-    fill(255, 102, 102, 150);
+    translate(updateFlowerX(), updateFlowerY());
+    fill(251, 126, 126, 255);
     rotate(n);
     for (var i = 0; i < 10; i ++) {
         rotate(PI/5);
-        ellipse(0, 40, 30, 80);
+        ellipse(0, 100, 60, 160);
     }
 
     rotate(-PI/5 * 10 - n);
-    image(img, 0, 0, 59, 48);
+    image(img, 0, 0);
 }
 
 function updateFlowerX() {
-    var xVel = 20 * sin(xVelRand);
-    xVelRand += 0.01;
+    var xVel = 80 * sin(xVelRand);
+    xVelRand += 0.035;
     var xCenter = width/2 + xVel;
-    console.log(xCenter);
     return xCenter;
+}
+
+function updateFlowerY() {
+    var yVel = -20 * cos(yVelRand);
+    yVelRand += 0.07;
+    var yCenter = height/2 + yVel;
+    return yCenter;
 }
 
 function pollLatestState() {
