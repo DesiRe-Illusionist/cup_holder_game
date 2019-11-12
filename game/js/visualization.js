@@ -51,7 +51,7 @@ function updateFlowerX() {
 }
 
 function pollLatestState() {
-    return loadJSON('./data.json');
+    return loadJSON('../data.json');
 }
 
 function readPreviousState() {
