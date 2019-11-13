@@ -14,7 +14,7 @@ canvas {
 
 #canvas {
     position: relative;
-    height: 1000px;
+    height: 100vh;
     width: 1000px;
     margin: auto;
     overflow: hidden;
@@ -22,4 +22,16 @@ canvas {
     img {
         position: absolute;
     }
+}
+
+#front {
+    bottom: 0;
+}
+
+#mid {
+    bottom: 0;
+}
+
+#back {
+    bottom: 0;
 }

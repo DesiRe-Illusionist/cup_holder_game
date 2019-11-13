@@ -3,6 +3,8 @@ var rotateRand = 0.00;
 var xVelRand = 0.00;
 var yVelRand = 0.00;
 
+const WEEKLY_WATER_VOLUME = 14000; // 2 liters a day
+
 function preload() {
     previousState = readPreviousState();
     latestState = pollLatestState();
@@ -10,14 +12,13 @@ function preload() {
 
 function setup() {
     const diff = compareStates(previousState.data, latestState.data);
-    console.log(diff);
+    const h = getHeightFromState(latestState.data);
+    setFlowerHeight(h);
+    console.log(h);
 
 
     createCanvas(windowWidth, windowHeight);
-    yCenter = height/3;
-
     img = loadImage('images/Cat2-4.png');
-    // background(0);
     imageMode(CENTER);
     blendMode(BLEND);
 }
@@ -82,4 +83,31 @@ function compareStates(previousState, latestState) {
     }
 
     return diff;
+}
+
+function getHeightFromState(state) {
+    var volume = 0;
+    for (var i = 0; i < state.length; i++) {
+        volume += state[i].volume;
+    }
+    return getHeightFromVolume(volume);
+}
+
+function getHeightFromVolume(volume) {
+    return (volume / WEEKLY_WATER_VOLUME) * (7000 - windowHeight);
+}
+
+function setFlowerHeight(height) {
+    document.getElementById('front').style.bottom = `calc(${-height}})`;
+    document.getElementById('mid').style.bottom = `calc(${-height})`;
+    document.getElementById('back').style.bottom = `calc(${-height})`;
+}
+
+function growFlower(height) {
+    $("#front").transition({ y: fy + height + "px" }, "linear")
+    $("#mid").transition({ y: (my + height * 6 / 7) + "px" }, "linear")
+    $("#back").transition({ y: (by + height * 5 / 7) + "px" }, "linear")
+    fy += dec;
+    my += dec * 6 / 7;
+    by += dec * 5 / 7;
 }
