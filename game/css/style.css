@@ -43,7 +43,7 @@ canvas {
   opacity: 0;
   width: 100%;
   position: absolute;
-  margin-top: 150px;
+  margin-top: 50px;
   text-align: center;
   color: white;
   font-size: 100px;
@@ -53,7 +53,7 @@ canvas {
 }
 
 .run-drink {
-  animation: drink 0.5s forwards;
+  animation: drink 0.8s forwards;
 }
 
 @keyframes drink {
