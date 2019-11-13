@@ -53,7 +53,7 @@ canvas {
 }
 
 .run-drink {
-  animation: drink 0.8s forwards;
+  animation: drink 1.2s forwards;
 }
 
 @keyframes drink {

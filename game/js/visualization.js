@@ -14,7 +14,8 @@ var next = 0;
 const WEEKLY_WATER_VOLUME = 14000; // 2 liters a day
 const CURRENT_STATE = 'current_state';
 const SPEED = 500;
-const TEXT_SPEED = 800;
+const TEXT_SPEED = 1200;
+const UPDATE_SPEED = 1500;
 
 function preload() {
     currentState = readPreviousState();
@@ -43,7 +44,7 @@ function draw() {
             localStorage.setItem(CURRENT_STATE, JSON.stringify(currentState));
         }
 
-        next = millis() + 1000;
+        next = millis() + UPDATE_SPEED;
         pollLatestStateAndFindDiff();
     }
 
