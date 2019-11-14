@@ -2,6 +2,7 @@ var myStorage = window.localStorage;
 var rotateRand = 0.00;
 var xVelRand = 0.00;
 var yVelRand = 0.00;
+var lastDrinkTime = new Date();
 
 flower_height = 0;
 my = 0;
@@ -33,24 +34,22 @@ function setup() {
     blendMode(BLEND);
 }
 
-var lastDrinkTime = new Date();
-
-//for testing 
-
-lastDrinkTime.setDate(lastDrinkTime.getDate() - 0);
-lastDrinkTime.setHours(lastDrinkTime.getHours() - 0);
-lastDrinkTime.setMinutes(lastDrinkTime.getMinutes() - 29);
-lastDrinkTime.setSeconds(lastDrinkTime.getSeconds() - 55);
+// lastDrinkTime.setDate(lastDrinkTime.getDate() - 0);
+//lastDrinkTime.setHours(lastDrinkTime.getHours() - 2);
+//lastDrinkTime.setMinutes(lastDrinkTime.getMinutes() - 8);
+//lastDrinkTime.setSeconds(lastDrinkTime.getSeconds() - 12);
 
 
 function draw() {
+    clear();
+
     if (millis() > next) {
         if (pending_animation_queue.length > 0) {
+            lastDrinkTime = new Date(0);
+            lastDrinkTime.setUTCSeconds(pending_animation_queue[pending_animation_queue.length - 1].time);
             const drinking_activity = pending_animation_queue.shift();
             growFlower(drinking_activity.volume);
-            console.log(drinking_activity);
-            lastDrinkTime = new Date(0);
-            lastDrinkTime.setUTCSeconds(drinking_activity.time);
+
             currentState.data.push(drinking_activity);
             localStorage.setItem(CURRENT_STATE, JSON.stringify(currentState));
         }
@@ -58,65 +57,13 @@ function draw() {
         next = millis() + UPDATE_SPEED;
         pollLatestStateAndFindDiff();
     }
-    currentTime = new Date();
-    var diffTime = int((currentTime - lastDrinkTime) / 1000);
-    var diffSec = diffTime % 60;
-    var diffMin = ((diffTime - diffSec) % (60 * 60)) / 60;
-    var diffHour = ((diffTime - diffSec - diffMin * 60) % (60 * 60 * 24)) / (60 * 60);
-    var diffDay = (diffTime - diffSec - diffMin * 60 - diffHour * 60 * 60) / (60 * 60 * 24);
-    textDay = int(diffDay) == 0 ? "" : int(diffDay) == 1 ? `${int(diffDay)}` + " day " : `${int(diffDay)}` + " days ";
-    textHour = int(diffHour) == 0 ? "" : int(diffHour) == 1 ? `${int(diffHour)}` + " hour " : `${int(diffHour)}` + " hours ";
-    textMin = int(diffMin) == 0 ? "" : int(diffMin) == 1 ? `${int(diffMin)}` + " minute " : `${int(diffMin)}` + " minutes ";
-    textSec = int(diffSec) == 0 ? "" : int(diffSec) == 1 ? `${int(diffSec)}` + " second " : `${int(diffSec)}` + " seconds ";
 
-    $("#diff-time").html(textDay + textHour + textMin + textSec);
-    if (((diffTime - diffSec) / 60) >= 30) {
-        $(".warning").fadeIn().css("display", "flex");
-    } else {
-        if ($('.warning').css('display') != 'none') {
-            $(".warning").fadeOut();
-        }
-    }
-
-    clear();
     const flowerX = updateFlowerX();
     const flowerY = updateFlowerY();
-    noFill();
-    stroke(2, 98, 0);
-    strokeWeight(13);
-    bezier(
-        windowWidth / 2 - 10, windowHeight + flower_height,
-        windowWidth / 2 - 10, windowHeight + flower_height / 2,
-        windowWidth / 2, windowHeight,
-        flowerX, flowerY
-    );
-    bezier(
-        windowWidth / 2, windowHeight + flower_height,
-        windowWidth / 2, windowHeight + flower_height / 2,
-        windowWidth / 2, windowHeight,
-        flowerX, flowerY
-    );
-    bezier(
-        windowWidth / 2 + 10, windowHeight + flower_height,
-        windowWidth / 2 + 10, windowHeight + flower_height / 2,
-        windowWidth / 2, windowHeight,
-        flowerX, flowerY
-    );
 
-    translate(flowerX, flowerY);
-
-    noStroke();
-    fill(251, 126, 126, 255);
-    rotateRand = rotateRand + 0.005; // Change speed here
-    var n = (noise(rotateRand) - 0.5);
-    rotate(n);
-    for (var i = 0; i < 10; i++) {
-        rotate(PI / 5);
-        ellipse(0, 100, 60, 160);
-    }
-
-    rotate(-PI / 5 * 10 - n);
-    image(img, 0, 0);
+    renderFlowerVine(flowerX, flowerY);
+    renderFlower(flowerX, flowerY);
+    renderReminder()
 }
 
 function updateFlowerX() {
@@ -198,4 +145,69 @@ function growFlower(volume) {
     setTimeout(() => {
         $("#water-text").removeClass("run-drink")
     }, TEXT_SPEED);
+}
+
+function renderFlowerVine(flowerX, flowerY) {
+    noFill();
+    stroke(2, 98, 0);
+    strokeWeight(13);
+
+    bezier(
+        windowWidth / 2 - 10, windowHeight + flower_height,
+        windowWidth / 2 - 10, windowHeight + flower_height / 2,
+        windowWidth / 2, windowHeight,
+        flowerX, flowerY
+    );
+    bezier(
+        windowWidth / 2, windowHeight + flower_height,
+        windowWidth / 2, windowHeight + flower_height / 2,
+        windowWidth / 2, windowHeight,
+        flowerX, flowerY
+    );
+    bezier(
+        windowWidth / 2 + 10, windowHeight + flower_height,
+        windowWidth / 2 + 10, windowHeight + flower_height / 2,
+        windowWidth / 2, windowHeight,
+        flowerX, flowerY
+    );
+}
+
+function renderFlower(flowerX, flowerY) {
+    translate(flowerX, flowerY);
+    noStroke();
+    fill(251, 126, 126, 255);
+    rotateRand = rotateRand + 0.005; // Change speed here
+    var n = (noise(rotateRand) - 0.5);
+    rotate(n);
+    for (var i = 0; i < 10; i++) {
+        rotate(PI / 5);
+        ellipse(0, 100, 60, 160);
+    }
+
+    rotate(-PI / 5 * 10 - n);
+    image(img, 0, 0);
+}
+
+function renderReminder() {
+    const currentTime = new Date();
+    const diffTime = int((currentTime - lastDrinkTime) / 1000);
+    const diffSec = diffTime % 60;
+    const diffMin = ((diffTime - diffSec) % (60 * 60)) / 60;
+    const diffHour = ((diffTime - diffSec - diffMin * 60) % (60 * 60 * 24)) / (60 * 60);
+    const diffDay = (diffTime - diffSec - diffMin * 60 - diffHour * 60 * 60) / (60 * 60 * 24);
+    const textDay = int(diffDay) == 0 ? "" : int(diffDay) == 1 ? `${int(diffDay)}` + " day " : `${int(diffDay)}` + " days ";
+    const textHour = int(diffHour) == 0 ? "" : int(diffHour) == 1 ? `${int(diffHour)}` + " hour " : `${int(diffHour)}` + " hours ";
+    const textMin = int(diffMin) == 0 ? "" : int(diffMin) == 1 ? `${int(diffMin)}` + " minute " : `${int(diffMin)}` + " minutes ";
+    const textSec = int(diffSec) == 0 ? "" : int(diffSec) == 1 ? `${int(diffSec)}` + " second " : `${int(diffSec)}` + " seconds ";
+
+    console.log(diffDay + " " + diffHour + " " + diffMin + " " + diffSec)
+
+    $("#diff-time").html(textDay + textHour + textMin + textSec);
+    if (((diffTime - diffSec) / 60) >= 60) {
+        $(".warning").fadeIn().css("display", "flex");
+    } else {
+        if ($('.warning').css('display') != 'none') {
+            $(".warning").fadeOut();
+        }
+    }
 }

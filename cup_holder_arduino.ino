@@ -17,7 +17,7 @@ void setup() {
 }
 
 void loop() {
-  float current_weight=scale.get_units(5);  // get average of 20 scale readings
+  float current_weight=scale.get_units(5);  // get average of 5 scale readings
   float scale_factor=(current_weight*0.00233 +1);  // divide the result by a known weight
   Serial.println(scale_factor);  // Print the scale factor to use
 }
