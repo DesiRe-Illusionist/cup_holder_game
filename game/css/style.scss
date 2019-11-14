@@ -39,8 +39,8 @@ canvas {
     bottom: 0;
 }
 
-
 $animation-dur: 1.2s;
+
 #water-text {
     opacity: 0;
     width: 100%;
@@ -52,6 +52,7 @@ $animation-dur: 1.2s;
     -webkit-text-fill-color: rgb(152, 204, 255);
     -webkit-text-stroke-width: 6px;
     -webkit-text-stroke-color: white;
+
     //animation: drink $animation-dur forwards;
 }
 
@@ -61,7 +62,7 @@ $animation-dur: 1.2s;
 
 @keyframes drink {
     0% {
-        top:-30px;
+        top: -30px;
         opacity: 0;
     }
 
@@ -78,5 +79,56 @@ $animation-dur: 1.2s;
     100% {
         top: 30px;
         opacity: 0;
+    }
+}
+
+.warning {
+    display: none;
+    z-index: 100;
+    position: absolute;
+    background-color: rgba($color: #000000, $alpha: 0.5);
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+    align-content: center;
+    justify-content: center;
+
+    p {
+        margin: 0 80px;
+        text-align: center;
+        color: white;
+        font-size: 5em;
+        font-weight: 400;
+        -webkit-text-fill-color: rgb(152, 204, 255);
+        -webkit-text-stroke-width: 3px;
+        -webkit-text-stroke-color: white;
+    }
+
+    .image-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        image {
+            margin: auto;
+        }
+    }
+}
+
+.run-warning {
+    animation: fade-in 1s forwards;
+}
+
+.run-warning-backwards {
+    animation: fade-in 1s backwards;    
+}
+
+@keyframes fade-in {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
     }
 }

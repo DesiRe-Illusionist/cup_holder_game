@@ -20,7 +20,7 @@ curr_data = -99999
 def write_data():
     global df, prev_measure, prev_data, curr_data, arduino
     while True:
-        curr_time = time.time()
+        curr_time = round(time.time(), 0);
         curr_measure = float(str(arduino.readline())[2:-5])
 
         # save all raw data to a csv file
@@ -56,9 +56,9 @@ def write_data():
 
                     # append data
                     data["data"].append(
-                        {"time": curr_time, "weight": curr_data, "prev_weight": prev_data, "volume": round(prev_data - curr_data, 2)})
+                        {"time": curr_time, "weight": curr_data, "prev_weight": prev_data, "volume": round(prev_data - curr_data, 0)})
                     a = {"time": curr_time, "weight": curr_data,
-                         "prev_weight": prev_data, "volume": round(prev_data - curr_data, 2)}
+                         "prev_weight": prev_data, "volume": round(prev_data - curr_data, 0)}
                     print(a)
 
                     # write data to the json file
