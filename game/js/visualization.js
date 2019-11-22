@@ -3,6 +3,7 @@ var rotateRand = 0.00;
 var xVelRand = 0.00;
 var yVelRand = 0.00;
 var lastDrinkTime = new Date();
+var isGrowing = false;
 
 flower_height = 0;
 my = 0;
@@ -16,7 +17,7 @@ const WEEKLY_WATER_VOLUME = 14000; // 2 liters a day
 const CURRENT_STATE = 'current_state';
 const SPEED = 500;
 const TEXT_SPEED = 1200;
-const UPDATE_SPEED = 1500;
+const UPDATE_SPEED = 100;
 
 function preload() {
     currentState = readPreviousState();
@@ -44,7 +45,7 @@ function draw() {
     clear();
 
     if (millis() > next) {
-        if (pending_animation_queue.length > 0) {
+        if (pending_animation_queue.length > 0 && isGrowing === false) {
             lastDrinkTime = new Date(0);
             lastDrinkTime.setUTCSeconds(pending_animation_queue[pending_animation_queue.length - 1].time);
             const drinking_activity = pending_animation_queue.shift();
@@ -131,6 +132,7 @@ function setFlowerHeight(height) {
 
 function growFlower(volume) {
 
+    isGrowing = true;
     const height = getHeightFromVolume(volume);
 
     $("#front").transition({ y: flower_height + height + "px" }, SPEED, "linear")
@@ -144,6 +146,7 @@ function growFlower(volume) {
     $("#water-text").addClass("run-drink")
     setTimeout(() => {
         $("#water-text").removeClass("run-drink")
+        isGrowing = false;
     }, TEXT_SPEED);
 }
 
