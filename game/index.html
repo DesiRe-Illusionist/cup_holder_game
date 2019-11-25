@@ -11,7 +11,9 @@
     <script language="javascript" type="text/javascript" src="js/visualization.js"></script>
     <script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
     <script src="js/script.js"></script>
-    <script src="js/jquery.transit.min.js"></script>
+    <script src="libraries/jquery-ui.js"></script>
+    <script src="libraries/jquery.transit.min.js"></script>
+    <link rel="stylesheet" href="https://use.typekit.net/jkk2xgu.css">
     <link rel="stylesheet" href="https://use.typekit.net/jkk2xgu.css">
     <link rel="stylesheet" href="css/style.css">
 </head>
@@ -21,6 +23,44 @@
         <img id="back" src="./assets/Frame 7.png" alt="">
         <img id="mid" src="./assets/Frame 6.png" alt="">
         <img id="front" src="./assets/Frame 5.png" alt="">
+        <div class="ui-elements" id="btn-hamburger">
+            <img src="./assets/Icon - Hamburger.svg" alt="">
+        </div>
+
+        <div class="ui-elements" id="panel-home">
+            <p>You drank</p>
+            <p>987 ml</p>
+            <p>today</p>
+        </div>
+        <div class="ui-elements" id="panel-calendar">
+            <img src="./assets/Icon - Add Task.svg" alt="">
+            <p>Calendar</p>
+        </div>
+        <div class="ui-elements" id="panel-today">
+            <img src="./assets/Icon - Time.svg" alt="">
+            <p>Today</p>
+        </div>
+        <div class="ui-elements" id="panel-settings">
+            <img src="./assets/Icon - Settings.svg" alt="">
+            <p>Settings</p>
+        </div>
+        <div class="ui-elements" id="panel-calendar-main">
+            <div id="datepicker"></div>
+            <script>
+                $("#datepicker").datepicker({
+                    inline: true,
+                    firstDay: 7,
+                    showOtherMonths: true,
+                    dayNamesMin: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+                });
+
+               /*
+                var selector = ".ui-state-default:contains(" + (new Date()).getDate() + ")";
+                $(selector).html("<span class='today'><p>" + new Date().getDate() + "</p></span>");
+                */
+
+            </script>
+        </div>
     </div>
     <p id="water-text">+100ml</p>
     <div class="warning">
