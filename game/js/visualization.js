@@ -117,6 +117,7 @@ function getHeightFromState(state) {
 }
 
 function getHeightFromVolume(volume) {
+    // 125 * ln(x + 1)
     return (volume / WEEKLY_WATER_VOLUME) * (7000 - windowHeight);
 }
 
@@ -203,7 +204,6 @@ function renderReminder() {
     const textMin = int(diffMin) == 0 ? "" : int(diffMin) == 1 ? `${int(diffMin)}` + " minute " : `${int(diffMin)}` + " minutes ";
     const textSec = int(diffSec) == 0 ? "" : int(diffSec) == 1 ? `${int(diffSec)}` + " second " : `${int(diffSec)}` + " seconds ";
 
-    console.log(diffDay + " " + diffHour + " " + diffMin + " " + diffSec)
 
     $("#diff-time").html(textDay + textHour + textMin + textSec);
     if (((diffTime - diffSec) / 60) >= 60) {
