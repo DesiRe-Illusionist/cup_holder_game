@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="https://use.typekit.net/jkk2xgu.css">
     <link rel="stylesheet" href="https://use.typekit.net/jkk2xgu.css">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/scrollbar.css">
 </head>
 
 <body>
@@ -23,43 +24,59 @@
         <img id="back" src="./assets/Frame 7.png" alt="">
         <img id="mid" src="./assets/Frame 6.png" alt="">
         <img id="front" src="./assets/Frame 5.png" alt="">
+
         <div class="ui-elements" id="btn-hamburger">
             <img src="./assets/Icon - Hamburger.svg" alt="">
         </div>
 
-        <div class="ui-elements" id="panel-home">
-            <p>You drank</p>
-            <p>987 ml</p>
-            <p>today</p>
+        <div class="ui-elements level-1" id="btn-back-home">
+            <img src="./assets/Icon - Back - Btn.svg" alt="">
         </div>
-        <div class="ui-elements" id="panel-calendar">
+
+        <div class="ui-elements level-1" id="panel-home">
+            <div class="card">
+                <div class="card-face card-face--front">
+                    <p>You drank</p>
+                    <p>987 ml</p>
+                    <p>today</p>
+                </div>
+                <div class="card-face card-face--back">
+                    <div class="scrolling-box scrollbar">
+                        <div class="entries">
+                            <p>Time</p>
+                            <p>Volume</p>
+                        </div>
+                        <div class="entries">
+                            <p class="time">9:40 am</p>
+                            <p class="volume">28 ml</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <script>
+                $(".card").on("click", () => {
+                    $(".card").toggleClass("is-flipped")
+                })
+            </script>
+        </div>
+
+        <div class="ui-elements level-1" id="panel-calendar">
             <img src="./assets/Icon - Add Task.svg" alt="">
             <p>Calendar</p>
         </div>
-        <div class="ui-elements" id="panel-today">
+        <div class="ui-elements level-1" id="panel-today">
             <img src="./assets/Icon - Time.svg" alt="">
             <p>Today</p>
         </div>
-        <div class="ui-elements" id="panel-settings">
+        <div class="ui-elements level-1" id="panel-settings">
             <img src="./assets/Icon - Settings.svg" alt="">
             <p>Settings</p>
         </div>
-        <div class="ui-elements" id="panel-calendar-main">
+        <div class="ui-elements level-2" id="panel-calendar-main">
             <div id="datepicker"></div>
-            <script>
-                $("#datepicker").datepicker({
-                    inline: true,
-                    firstDay: 7,
-                    showOtherMonths: true,
-                    dayNamesMin: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-                });
-
-               /*
-                var selector = ".ui-state-default:contains(" + (new Date()).getDate() + ")";
-                $(selector).html("<span class='today'><p>" + new Date().getDate() + "</p></span>");
-                */
-
-            </script>
+        </div>
+        <div class="ui-elements level-2" id="btn-back-level-1">
+            <img src="./assets/Icon - Back - Btn.svg" alt="">
         </div>
     </div>
     <p id="water-text">+100ml</p>
@@ -70,6 +87,33 @@
             <img src="./assets/sadcat.png" alt="">
         </div>
     </div>
+
+    <script>
+        $("#datepicker").datepicker({
+            inline: true,
+            firstDay: 7,
+            showOtherMonths: true,
+            dayNamesMin: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+        });
+
+        $("#btn-hamburger").on("click", () => {
+            $(".level-1").fadeIn(500).css({ "display": "flex" });
+            $("#btn-hamburger").fadeOut(200);
+        })
+        $("#btn-back-home").on("click", () => {
+            $(".level-1").fadeOut(200);
+            $("#btn-hamburger").fadeIn(500);
+        })
+        $("#panel-calendar").on("click", () => {
+            $(".level-1").fadeOut(200);
+            $("#panel-calendar-main").fadeIn(500).css({ "display": "flex" });
+            $("#btn-back-level-1").fadeIn(500).css({ "display": "flex" });
+        })
+        $("#btn-back-level-1").on("click", () => {
+            $(".level-2").fadeOut(200);
+            $(".level-1").fadeIn(500).css({ "display": "flex" });
+        })
+    </script>
 </body>
 
 </html>
