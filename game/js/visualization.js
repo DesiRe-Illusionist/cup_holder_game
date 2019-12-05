@@ -52,6 +52,7 @@ function draw() {
             growFlower(drinking_activity.volume);
 
             currentState.data.push(drinking_activity);
+            //FIREBASE
             localStorage.setItem(CURRENT_STATE, JSON.stringify(currentState));
         }
 
@@ -84,6 +85,8 @@ function updateFlowerY() {
 function readPreviousState() {
     var prev_data = localStorage.getItem(CURRENT_STATE);
 
+    //FIREBASE
+
     if (prev_data === null || prev_data === "") {
         var empty_data = '{ "data": [] }';
         localStorage.setItem(CURRENT_STATE, empty_data);
@@ -94,10 +97,14 @@ function readPreviousState() {
 }
 
 function pollLatestStateAndFindDiff() {
+
+    //FIREBASE
     return loadJSON('../data.json', pushLatestChangeToAnimationQueue);
 }
 
 async function pushLatestChangeToAnimationQueue(latestState) {
+
+    //FIREBASE
     const registered_activity_length = currentState.data.length + pending_animation_queue.length;
     if (latestState.data.length < registered_activity_length) {
         throw "Latest state length smaller than previous state. Corrupt data!";
