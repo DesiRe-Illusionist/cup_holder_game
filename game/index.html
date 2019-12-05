@@ -17,6 +17,7 @@
     <link rel="stylesheet" href="https://use.typekit.net/jkk2xgu.css">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/scrollbar.css">
+
 </head>
 
 <body>
@@ -114,6 +115,34 @@
             $(".level-1").fadeIn(500).css({ "display": "flex" });
         })
     </script>
+
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/7.5.0/firebase-app.js"></script>
+
+    <!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+    <script src="https://www.gstatic.com/firebasejs/7.5.0/firebase-analytics.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/6.0.2/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/6.0.2/firebase-database.js"></script>
+
+    <script>
+        // Your web app's Firebase configuration
+        var firebaseConfig = {
+            apiKey: "AIzaSyD8NmxoeSqqOLW4h3YzeAQEut2RGPoBv8I",
+            authDomain: "cupholder-de568.firebaseapp.com",
+            databaseURL: "https://cupholder-de568.firebaseio.com",
+            projectId: "cupholder-de568",
+            storageBucket: "cupholder-de568.appspot.com",
+            messagingSenderId: "163912162004",
+            appId: "1:163912162004:web:a01116d33f834897d57941",
+            measurementId: "G-6CZEERC43E"
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        firebase.analytics();
+
+        var db = firebase.database();
+    </script>
 </body>
 
-</html>
+</html> 

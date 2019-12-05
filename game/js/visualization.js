@@ -20,11 +20,18 @@ const TEXT_SPEED = 1200;
 const UPDATE_SPEED = 100;
 
 function preload() {
-    currentState = readPreviousState();
-    pollLatestStateAndFindDiff();
+    readPreviousState();
+    setTimeout(() => {
+        pollLatestStateAndFindDiff();
+
+    }, 3000);
 }
 
 function setup() {
+    console.log(currentState)
+
+    var day_of_week = new Date().getDay();
+    console.log(day_of_week)
     flower_height = getHeightFromState(currentState.data);
     setFlowerHeight(flower_height);
 
@@ -82,24 +89,32 @@ function updateFlowerY() {
     return yCenter;
 }
 
+function getMonday(d) {
+    d = new Date(d);
+    var day = d.getDay(),
+        diff = d.getDate() - day + (day == 0 ? -7 : 0); // adjust when day is sunday
+    return new Date(d.setDate(diff));
+}
+
+
 function readPreviousState() {
-    var prev_data = localStorage.getItem(CURRENT_STATE);
+    var d = getMonday(new Date());
+    var datestring = d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2)
 
-    //FIREBASE
-
-    if (prev_data === null || prev_data === "") {
-        var empty_data = '{ "data": [] }';
-        localStorage.setItem(CURRENT_STATE, empty_data);
-        prev_data = localStorage.getItem(CURRENT_STATE);
-    }
-
-    return JSON.parse(prev_data);
+    db.ref().child(datestring).once('value').then((snapshot) => {
+        currentState = snapshot.val();
+    });
 }
 
 function pollLatestStateAndFindDiff() {
+    var d = getMonday(new Date());
+    var datestring = d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2)
 
+    db.ref().child(datestring).once('value').then((snapshot) => {
+        currentState = snapshot.val();
+    });
     //FIREBASE
-    return loadJSON('../data.json', pushLatestChangeToAnimationQueue);
+    //return loadJSON('../data.json', pushLatestChangeToAnimationQueue);
 }
 
 async function pushLatestChangeToAnimationQueue(latestState) {
