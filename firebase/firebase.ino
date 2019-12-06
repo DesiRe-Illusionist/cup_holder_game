@@ -4,6 +4,7 @@
  
 #define DOUT  2  // Arduino pin D4 connect to HX711 DOUT
 #define CLK  0  //  Arduino pin D3 connect to HX711 CLK
+#define LED 5
 
 #define FIREBASE_HOST "cupholder-de568.firebaseio.com"
 #define FIREBASE_AUTH "y7icYjoydV9Y83NzxYeSv17pqacDXt6If6zmwD26"
@@ -22,6 +23,7 @@ void setup()
   Serial.begin(115200);
 
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+  //WiFi.begin("Modera Guest");
   Serial.print("Connecting to Wi-Fi");
   while (WiFi.status() != WL_CONNECTED)
   {
@@ -52,7 +54,9 @@ void setup()
   scale.begin(DOUT, CLK);
   scale.set_scale();  // Start scale
   scale.tare();       // Reset scale to zero
+  pinMode(LED, OUTPUT);
 }
+
 
 String data_path = "/data";
 String light_path = "/light";
@@ -65,4 +69,22 @@ void loop()
   Firebase.set(firebaseData, data_path, scale_factor);
   Firebase.getBool(booleanData, light_path);
   Serial.println(booleanData.boolData());
+
+  if (booleanData.boolData()) {
+    fadeOn(1000,5);
+    fadeOff(1000,5);
+  }
+}
+
+void fadeOn(unsigned int time,int increament){
+  for (byte value = 0 ; value < 255; value+=increament){
+    analogWrite(LED, value);
+    delay(time/(255/5));
+  }
+}
+void fadeOff(unsigned int time,int decreament){
+  for (byte value = 255; value >0; value-=decreament){
+    analogWrite(LED, value);
+    delay(time/(255/5));
+  }
 }
