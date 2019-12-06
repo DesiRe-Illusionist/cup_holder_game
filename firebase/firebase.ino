@@ -11,6 +11,7 @@
 #define WIFI_PASSWORD "81550379"
 
 FirebaseData firebaseData;
+FirebaseData booleanData;
 FirebaseJson json;
 HX711 scale;  // Init of library
 
@@ -53,14 +54,15 @@ void setup()
   scale.tare();       // Reset scale to zero
 }
 
-String path = "/data";
-//uint8_t i = 0;
+String data_path = "/data";
+String light_path = "/light";
 
 void loop()
 {
   float current_weight=scale.get_units(2);
   float scale_factor=(current_weight*0.00233 +1);  // divide the result by a known weight
 
-  Firebase.set(firebaseData, path, scale_factor);
-  Serial.println(scale_factor);
+  Firebase.set(firebaseData, data_path, scale_factor);
+  Firebase.getBool(booleanData, light_path);
+  Serial.println(booleanData.boolData());
 }
