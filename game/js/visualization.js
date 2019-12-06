@@ -70,14 +70,15 @@ function draw() {
 
 
             currentState.data.push(drinking_activity);
+            console.log("hello");
             //FIREBASE
             $.ajax({
                 type: "PUT",
                 url: "https://cupholder-de568.firebaseio.com/previous_state.json",
                 data: currentState,
                 dataType: "dataType",
-                success: function (response) {
-                    alert(currentState) 
+                success: function(response) {
+                    alert(currentState);
                 }
             });
         }
@@ -165,7 +166,6 @@ async function pushLatestChangeToAnimationQueue(latestState) {
 }
 
 function getHeightFromState(state) {
-    _.each({one: 1, two: 2, three: 3}, alert);
     var volume = 0;
     for (var i = 0; i < currentState.data.length; i++) {
         volume += state[i].volume;
