@@ -1,13 +1,19 @@
 #include "FirebaseESP8266.h"
 #include <ESP8266WiFi.h>
+#include "HX711.h"  // Library needed to communicate with HX711 https://github.com/bogde/HX711
+ 
+#define DOUT  2  // Arduino pin D4 connect to HX711 DOUT
+#define CLK  0  //  Arduino pin D3 connect to HX711 CLK
 
 #define FIREBASE_HOST "cupholder-de568.firebaseio.com"
 #define FIREBASE_AUTH "y7icYjoydV9Y83NzxYeSv17pqacDXt6If6zmwD26"
-#define WIFI_SSID "Himitsu"
-#define WIFI_PASSWORD "Nandeyanen!?"
+#define WIFI_SSID "卿如晤"
+#define WIFI_PASSWORD "81550379"
 
 FirebaseData firebaseData;
 FirebaseJson json;
+HX711 scale;  // Init of library
+
 
 void setup()
 {
@@ -42,7 +48,9 @@ void setup()
   Firebase.enableClassicRequest(firebaseData, true);
   */
 
-  
+  scale.begin(DOUT, CLK);
+  scale.set_scale();  // Start scale
+  scale.tare();       // Reset scale to zero
 }
 
 String path = "/data";
@@ -50,6 +58,9 @@ String path = "/data";
 
 void loop()
 {
-  Firebase.setDouble(firebaseData, path, random(500));
-  delay(500);
+  float current_weight=scale.get_units(2);
+  float scale_factor=(current_weight*0.00233 +1);  // divide the result by a known weight
+
+  Firebase.set(firebaseData, path, scale_factor);
+  Serial.println(scale_factor);
 }

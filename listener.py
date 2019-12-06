@@ -7,6 +7,8 @@ from datetime import datetime, timedelta
 import firebase_admin
 from firebase_admin import credentials, firestore, db
 from array import *
+import random
+
 cred = credentials.Certificate("./ServiceAccountKey.json")
 firebase_admin.initialize_app(cred, {
     'databaseURL': 'https://cupholder-de568.firebaseio.com/'
@@ -27,10 +29,17 @@ def write_data():
         day_of_week_decimal = time.strftime("%w", curr_time)
         #Firebase
         start_of_week_date = (datetime.now() - timedelta(days=int(day_of_week_decimal))).strftime("%Y-%m-%d")
-        curr_tree_json_filename = os.getcwd() + "/data/trees/tree-" + start_of_week_date + ".json"
 
         curr_measure = db.reference('/data').get()
-        #print("Current measure: " + str(curr_measure))
+        print("Current measure: " + str(curr_measure))
+
+        prev_state_ref = db.reference("/previous_state")
+        prev_state_content = prev_state_ref.get()
+        if prev_state_content == None:
+            prev_state_ref.set({
+                "cat_index": random.randint(0, 5),
+                "flower_index": random.randint(0, 5)
+            })
 
         # init prev, curr, last
         if (prev_measure == -99999):

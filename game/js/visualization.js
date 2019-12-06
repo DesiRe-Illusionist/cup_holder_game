@@ -18,6 +18,7 @@ const CURRENT_STATE = 'current_state';
 const SPEED = 500;
 const TEXT_SPEED = 1200;
 const UPDATE_SPEED = 100;
+const COLOR_ARRAY = ['C1C6E4', 'FFAD80', '9C87B8', 'FB7E7E', 'B2DAFF', 'D6FAA8']
 
 function preload() {
     readPreviousState();
@@ -37,7 +38,8 @@ function setup() {
 
 
     createCanvas(windowWidth, windowHeight);
-    img = loadImage('assets/Cat2-4.png');
+    img = loadImage('assets/Cat' + str(currentState.cat_index) + '.png');
+    flower_color = COLOR_ARRAY[currentState.flower_index]
     imageMode(CENTER);
     blendMode(BLEND);
 }
@@ -201,7 +203,7 @@ function renderFlowerVine(flowerX, flowerY) {
 function renderFlower(flowerX, flowerY) {
     translate(flowerX, flowerY);
     noStroke();
-    fill(251, 126, 126, 255);
+    fill(flower_color);
     rotateRand = rotateRand + 0.005; // Change speed here
     var n = (noise(rotateRand) - 0.5);
     rotate(n);
