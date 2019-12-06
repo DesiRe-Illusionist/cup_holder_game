@@ -63,6 +63,8 @@ def write_data():
                         "volume": incremental_volume,
                     }
 
+                    print("new activities identified: " + str(activity))
+
                     # append data
                     activities_ref = db.reference("/"+start_of_week_date+"/"+day_of_week+"/activities")
                     activities_content = activities_ref.get()

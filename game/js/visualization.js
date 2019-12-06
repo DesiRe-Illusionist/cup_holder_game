@@ -18,18 +18,9 @@ const CURRENT_STATE = 'current_state';
 const SPEED = 500;
 const TEXT_SPEED = 1200;
 const UPDATE_SPEED = 100;
-const COLOR_ARRAY = ['C1C6E4', 'FFAD80', '9C87B8', 'FB7E7E', 'B2DAFF', 'D6FAA8']
+const COLOR_ARRAY = ['#C1C6E4', '#FFAD80', '#9C87B8', '#FB7E7E', '#B2DAFF', '#D6FAA8'];
+const WEEK_DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
-var d = new Date();
-var weekday = new Array(7);
-weekday[0] = "Sunday";
-weekday[1] = "Monday";
-weekday[2] = "Tuesday";
-weekday[3] = "Wednesday";
-weekday[4] = "Thursday";
-weekday[5] = "Friday";
-weekday[6] = "Saturday";
-var day_of_week = weekday[d.getDay()];
 
 function preload() {
     readPreviousState();
@@ -37,13 +28,11 @@ function preload() {
 }
 
 function setup() {
-    console.log("currentState: {");
     console.log(currentState);
-    console.log("}");
 
-    flower_height = getHeightFromState(currentState.data);
+    flower_height = getHeightFromState(currentState);
+    console.log(flower_height);
     setFlowerHeight(flower_height);
-
 
     createCanvas(windowWidth, windowHeight);
     img = loadImage('assets/Cat' + str(currentState.cat_index) + '.png');
@@ -68,19 +57,10 @@ function draw() {
             const drinking_activity = pending_animation_queue.shift();
             growFlower(drinking_activity.volume);
 
-
-            currentState.data.push(drinking_activity);
-            console.log("hello");
-            //FIREBASE
-            $.ajax({
-                type: "PUT",
-                url: "https://cupholder-de568.firebaseio.com/previous_state.json",
-                data: currentState,
-                dataType: "dataType",
-                success: function(response) {
-                    alert(currentState);
-                }
-            });
+            const drinking_activity_date = WEEK_DAYS[new Date(drinking_activity.time).getDay()];
+            currentState[drinking_activity_date].activities.push(drinking_activity);
+            currentState[drinking_activity_date].total_volume += drinking_activity.volume;
+            putStateAsPreviousState(currentState);
         }
 
         next = millis() + UPDATE_SPEED;
@@ -118,64 +98,71 @@ function getMonday(d) {
 
 
 function readPreviousState() {
-    // db.ref().child(datestring).once('value').then((snapshot) => {
-    //     currentState = snapshot.val();
-    // });
+    day_of_week = getDayOfWeek();
     var url = "https://cupholder-de568.firebaseio.com/previous_state.json"
     return loadJSON(url, (res) => {
         currentState = res;
-        if (!_.has(currentState, day_of_week)) {
-            currentState[day_of_week] = {
-                "activities": []
+        WEEK_DAYS.forEach((day) => {
+            if (!_.has(currentState, day)) {
+                currentState[day] = {
+                    "activities": [],
+                    "total_volume": 0
+                }
             }
-        }
+        })
+        putStateAsPreviousState(currentState);
     });
 }
 
 function pollLatestStateAndFindDiff() {
-    // db.ref().child("previous_state").once('value').then((snapshot) => {
-    //     currentState = snapshot.val();
-    // })
-    //FIREBASE
     var d = getMonday(new Date());
-    var datestring = d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2)
+    var datestring = d.toISOString().slice(0, 10);
     var url = "https://cupholder-de568.firebaseio.com/" + datestring + ".json"
     return loadJSON(url, pushLatestChangeToAnimationQueue);
 }
 
 async function pushLatestChangeToAnimationQueue(latestState) {
 
+    current_activities = getAllDrinkingActivitiesFromState(currentState);
+    latest_activities = getAllDrinkingActivitiesFromState(latestState);
 
-    console.log("latestState: {");
-    console.log(day_of_week);
-    console.log(latestState);
-    console.log("}");
-
-
-
-    //FIREBASE
-    const registered_activity_length = currentState[day_of_week].activities.length + pending_animation_queue.length;
-    if (latestState[day_of_week].activities.length < registered_activity_length) {
+    // console.log("current activities: " + JSON.stringify(current_activities));
+    // console.log("latest activities: " + JSON.stringify(latest_activities));
+    const registered_activity_length = current_activities.length + pending_animation_queue.length;
+    if (latest_activities.length < registered_activity_length) {
         throw "Latest state length smaller than previous state. Corrupt data!";
     }
 
-    for (var i = registered_activity_length; i < latestState[day_of_week].activities.length; i++) {
-        pending_animation_queue.push(latestState[day_of_week].activities[i]);
+    for (var i = registered_activity_length; i < latest_activities.length; i++) {
+        pending_animation_queue.push(latest_activities[i]);
     }
-
 }
 
 function getHeightFromState(state) {
     var volume = 0;
-    for (var i = 0; i < currentState.data.length; i++) {
-        volume += state[i].volume;
-    }
-    return getHeightFromVolume(volume);
+    WEEK_DAYS.forEach((day) => {
+        if (_.has(state, day)) {
+            volume += state[day].total_volume;
+        }
+    })
+
+    var height = getHeightFromVolume(volume);
+    return height;
 }
 
 function getHeightFromVolume(volume) {
     // 125 * ln(x + 1)
     return (volume / WEEKLY_WATER_VOLUME) * (7000 - windowHeight);
+}
+
+function getAllDrinkingActivitiesFromState(state) {
+    var activities = [];
+    WEEK_DAYS.forEach((day) => {
+        if (_.has(state, day)) {
+            activities = activities.concat(state[day].activities);
+        }
+    });
+    return activities;
 }
 
 function setFlowerHeight(height) {
@@ -269,4 +256,20 @@ function renderReminder() {
             $(".warning").fadeOut();
         }
     }
+}
+
+function putStateAsPreviousState(state) {
+    return $.ajax({
+        type: "PUT",
+        url: "https://cupholder-de568.firebaseio.com/previous_state.json",
+        data: JSON.stringify(state),
+        success: (response) => {
+            console.log(response);
+        }
+    });
+}
+
+function getDayOfWeek() {
+    var d = new Date();
+    return WEEK_DAYS[d.getDay()];
 }
