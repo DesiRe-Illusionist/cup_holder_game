@@ -21,6 +21,9 @@ const UPDATE_SPEED = 100;
 const COLOR_ARRAY = ['#C1C6E4', '#FFAD80', '#9C87B8', '#FB7E7E', '#B2DAFF', '#D6FAA8'];
 const WEEK_DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
+function makeList(element, index, list) {
+    $("#entries-list").append()
+}
 
 function preload() {
     readPreviousState();
@@ -28,8 +31,6 @@ function preload() {
 }
 
 function setup() {
-    console.log(currentState);
-
     flower_height = getHeightFromState(currentState);
     console.log(flower_height);
     setFlowerHeight(flower_height);
@@ -129,6 +130,11 @@ async function pushLatestChangeToAnimationQueue(latestState) {
     // console.log("current activities: " + JSON.stringify(current_activities));
     // console.log("latest activities: " + JSON.stringify(latest_activities));
     const registered_activity_length = current_activities.length + pending_animation_queue.length;
+
+    console.log("--------------------------")
+    console.log(current_activities.length)
+    console.log(pending_animation_queue.length)
+    console.log(latest_activities.length)
     if (latest_activities.length < registered_activity_length) {
         throw "Latest state length smaller than previous state. Corrupt data!";
     }
@@ -143,6 +149,7 @@ function getHeightFromState(state) {
     WEEK_DAYS.forEach((day) => {
         if (_.has(state, day)) {
             volume += state[day].total_volume;
+            $("#total-volume").html(volume);
         }
     })
 
@@ -187,6 +194,8 @@ function growFlower(volume) {
     my += height * 6 / 7;
     by += height * 5 / 7;
 
+    var current_total = int($("#total-volume").text());
+    $("#total-volume").html(volume+current_total);
     $("#water-text").html("+" + `${volume}` + "ml")
     $("#water-text").addClass("run-drink")
     setTimeout(() => {
@@ -264,7 +273,7 @@ function putStateAsPreviousState(state) {
         url: "https://cupholder-de568.firebaseio.com/previous_state.json",
         data: JSON.stringify(state),
         success: (response) => {
-            console.log(response);
+            //console.log(response);
         }
     });
 }

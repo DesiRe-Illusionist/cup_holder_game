@@ -8,8 +8,11 @@
 
 #define FIREBASE_HOST "cupholder-de568.firebaseio.com"
 #define FIREBASE_AUTH "y7icYjoydV9Y83NzxYeSv17pqacDXt6If6zmwD26"
-#define WIFI_SSID "卿如晤"
-#define WIFI_PASSWORD "81550379"
+//#define WIFI_SSID "卿如晤"
+//#define WIFI_PASSWORD "81550379"
+
+#define WIFI_SSID "Mix 2s"
+#define WIFI_PASSWORD "reventonchen"
 
 FirebaseData firebaseData;
 FirebaseData booleanData;
