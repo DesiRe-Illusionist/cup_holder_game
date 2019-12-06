@@ -20,19 +20,27 @@ const TEXT_SPEED = 1200;
 const UPDATE_SPEED = 100;
 const COLOR_ARRAY = ['C1C6E4', 'FFAD80', '9C87B8', 'FB7E7E', 'B2DAFF', 'D6FAA8']
 
+var d = new Date();
+var weekday = new Array(7);
+weekday[0] = "Sunday";
+weekday[1] = "Monday";
+weekday[2] = "Tuesday";
+weekday[3] = "Wednesday";
+weekday[4] = "Thursday";
+weekday[5] = "Friday";
+weekday[6] = "Saturday";
+var day_of_week = weekday[d.getDay()];
+
 function preload() {
     readPreviousState();
-    setTimeout(() => {
-        pollLatestStateAndFindDiff();
-
-    }, 3000);
+    pollLatestStateAndFindDiff();
 }
 
 function setup() {
-    console.log(currentState)
+    console.log("currentState: {");
+    console.log(currentState);
+    console.log("}");
 
-    var day_of_week = new Date().getDay();
-    console.log(day_of_week)
     flower_height = getHeightFromState(currentState.data);
     setFlowerHeight(flower_height);
 
@@ -60,9 +68,18 @@ function draw() {
             const drinking_activity = pending_animation_queue.shift();
             growFlower(drinking_activity.volume);
 
+
             currentState.data.push(drinking_activity);
             //FIREBASE
-            localStorage.setItem(CURRENT_STATE, JSON.stringify(currentState));
+            $.ajax({
+                type: "PUT",
+                url: "https://cupholder-de568.firebaseio.com/previous_state.json",
+                data: currentState,
+                dataType: "dataType",
+                success: function (response) {
+                    alert(currentState) 
+                }
+            });
         }
 
         next = millis() + UPDATE_SPEED;
@@ -100,39 +117,55 @@ function getMonday(d) {
 
 
 function readPreviousState() {
-    var d = getMonday(new Date());
-    var datestring = d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2)
-
-    db.ref().child(datestring).once('value').then((snapshot) => {
-        currentState = snapshot.val();
+    // db.ref().child(datestring).once('value').then((snapshot) => {
+    //     currentState = snapshot.val();
+    // });
+    var url = "https://cupholder-de568.firebaseio.com/previous_state.json"
+    return loadJSON(url, (res) => {
+        currentState = res;
+        if (!_.has(currentState, day_of_week)) {
+            currentState[day_of_week] = {
+                "activities": []
+            }
+        }
     });
 }
 
 function pollLatestStateAndFindDiff() {
+    // db.ref().child("previous_state").once('value').then((snapshot) => {
+    //     currentState = snapshot.val();
+    // })
+    //FIREBASE
     var d = getMonday(new Date());
     var datestring = d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2)
-
-    db.ref().child(datestring).once('value').then((snapshot) => {
-        currentState = snapshot.val();
-    });
-    //FIREBASE
-    //return loadJSON('../data.json', pushLatestChangeToAnimationQueue);
+    var url = "https://cupholder-de568.firebaseio.com/" + datestring + ".json"
+    return loadJSON(url, pushLatestChangeToAnimationQueue);
 }
 
 async function pushLatestChangeToAnimationQueue(latestState) {
 
+
+    console.log("latestState: {");
+    console.log(day_of_week);
+    console.log(latestState);
+    console.log("}");
+
+
+
     //FIREBASE
-    const registered_activity_length = currentState.data.length + pending_animation_queue.length;
-    if (latestState.data.length < registered_activity_length) {
+    const registered_activity_length = currentState[day_of_week].activities.length + pending_animation_queue.length;
+    if (latestState[day_of_week].activities.length < registered_activity_length) {
         throw "Latest state length smaller than previous state. Corrupt data!";
     }
 
-    for (var i = registered_activity_length; i < latestState.data.length; i++) {
-        pending_animation_queue.push(latestState.data[i]);
+    for (var i = registered_activity_length; i < latestState[day_of_week].activities.length; i++) {
+        pending_animation_queue.push(latestState[day_of_week].activities[i]);
     }
+
 }
 
 function getHeightFromState(state) {
+    _.each({one: 1, two: 2, three: 3}, alert);
     var volume = 0;
     for (var i = 0; i < currentState.data.length; i++) {
         volume += state[i].volume;
@@ -227,7 +260,6 @@ function renderReminder() {
     const textHour = int(diffHour) == 0 ? "" : int(diffHour) == 1 ? `${int(diffHour)}` + " hour " : `${int(diffHour)}` + " hours ";
     const textMin = int(diffMin) == 0 ? "" : int(diffMin) == 1 ? `${int(diffMin)}` + " minute " : `${int(diffMin)}` + " minutes ";
     const textSec = int(diffSec) == 0 ? "" : int(diffSec) == 1 ? `${int(diffSec)}` + " second " : `${int(diffSec)}` + " seconds ";
-
 
     $("#diff-time").html(textDay + textHour + textMin + textSec);
     if (((diffTime - diffSec) / 60) >= 60) {
