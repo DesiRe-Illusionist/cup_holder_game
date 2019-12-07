@@ -24,10 +24,10 @@ const WEEK_DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Frid
 
 function preload() {
     readPreviousState();
-    pollLatestStateAndFindDiff();
-;}
+}
 
 function setup() {
+    pollLatestStateAndFindDiff();
     var template = _.template('<div class="entries" ><p class="time"><%= time %></p><p class="volume"><%= volume %></p></div>')
     var entries_list_setup = [];
     for (var key in currentState[day_of_week].activities) {
@@ -67,6 +67,7 @@ function draw() {
             currentState[drinking_activity_date].activities.push(drinking_activity);
             currentState[drinking_activity_date].total_volume += drinking_activity.volume;
             putStateAsPreviousState(currentState);
+            switchReminderLight(false);
         }
 
         next = millis() + UPDATE_SPEED;
@@ -95,11 +96,9 @@ function updateFlowerY() {
     return yCenter;
 }
 
-function getMonday(d) {
-    d = new Date(d);
-    var day = d.getDay(),
-        diff = d.getDate() - day + (day == 0 ? -7 : 0); // adjust when day is sunday
-    return new Date(d.setDate(diff));
+function getSunday(date)   {
+    var sunday = new Date(date.setDate(date.getDate() - date.getDay()));
+    return new Date(sunday.getTime() - (sunday.getTimezoneOffset() * 60000)).toISOString().slice(0, 10);
 }
 
 
@@ -121,25 +120,19 @@ function readPreviousState() {
 }
 
 function pollLatestStateAndFindDiff() {
-    var d = getMonday(new Date());
-    var datestring = d.toISOString().slice(0, 10);
+    var datestring = getSunday(new Date());
     var url = "https://cupholder-de568.firebaseio.com/" + datestring + ".json"
     return loadJSON(url, pushLatestChangeToAnimationQueue);
 }
 
 async function pushLatestChangeToAnimationQueue(latestState) {
 
+
     current_activities = getAllDrinkingActivitiesFromState(currentState);
     latest_activities = getAllDrinkingActivitiesFromState(latestState);
 
-    // console.log("current activities: " + JSON.stringify(current_activities));
-    // console.log("latest activities: " + JSON.stringify(latest_activities));
     const registered_activity_length = current_activities.length + pending_animation_queue.length;
 
-    // console.log("--------------------------")
-    // console.log(current_activities.length)
-    // console.log(pending_animation_queue.length)
-    // console.log(latest_activities.length)
     if (latest_activities.length < registered_activity_length) {
         throw "Latest state length smaller than previous state. Corrupt data!";
     }
@@ -147,6 +140,16 @@ async function pushLatestChangeToAnimationQueue(latestState) {
     for (var i = registered_activity_length; i < latest_activities.length; i++) {
         pending_animation_queue.push(latest_activities[i]);
     }
+}
+
+function getAllDrinkingActivitiesFromState(state) {
+    var activities = [];
+    WEEK_DAYS.forEach((day) => {
+        if (_.has(state, day) && state[day].activities != undefined) {
+            activities = activities.concat(state[day].activities);
+        }
+    });
+    return activities;
 }
 
 function getHeightFromState(state) {
@@ -163,22 +166,7 @@ function getHeightFromState(state) {
 }
 
 function getHeightFromVolume(volume) {
-    // 125 * ln(x + 1)
     return (volume / WEEKLY_WATER_VOLUME) * (7000 - windowHeight);
-}
-
-function getAllDrinkingActivitiesFromState(state) {
-    var activities = [];
-    WEEK_DAYS.forEach((day) => {
-        if (_.has(state, day)) {
-            if (state[day].activities != undefined) {
-                activities = activities.concat(state[day].activities);
-            }
-        }
-        //console.log(activities)
-    });
-
-    return activities;
 }
 
 function setFlowerHeight(height) {
@@ -269,6 +257,7 @@ function renderReminder() {
     $("#diff-time").html(textDay + textHour + textMin + textSec);
     if (((diffTime - diffSec) / 60) >= 60) {
         $(".warning").fadeIn().css("display", "flex");
+        switchReminderLight(true);
     } else {
         if ($('.warning').css('display') != 'none') {
             $(".warning").fadeOut();
@@ -283,6 +272,17 @@ function putStateAsPreviousState(state) {
         data: JSON.stringify(state),
         success: (response) => {
             //console.log(response);
+        }
+    });
+}
+
+function switchReminderLight(isLightOn) {
+    return $.ajax({
+        type: "PATCH",
+        url: "https://cupholder-de568.firebaseio.com/.json",
+        data: JSON.stringify({"light": isLightOn}),
+        success: (response) => {
+            // console.log(response);
         }
     });
 }
