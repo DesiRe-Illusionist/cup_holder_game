@@ -43,15 +43,12 @@
                     <p>today</p>
                 </div>
                 <div class="card-face card-face--back">
-                    <div class="scrolling-box scrollbar">
+                    <div class="scrolling-box scrollbar" id="entries-list">
                         <div class="entries">
                             <p>Time</p>
                             <p>Volume</p>
                         </div>
-                        <div class="entries" id="entries-list">
-                            <p class="time">9:40 am</p>
-                            <p class="volume">28 ml</p>
-                        </div>
+
                     </div>
                 </div>
             </div>
@@ -117,6 +114,47 @@
         })
     </script>
 
+    <script>
+
+        function insertCircle() {
+            $(".circle").remove()
+
+
+            $('.ui-state-default').append("<div class='circle'></div>");
+
+            $(".circle").each((i, obj) => {
+                var cir = obj;
+
+                var testD = new Date($(".ui-datepicker-year").text() + $(".ui-datepicker-month").text() + $(cir).closest("a").text());
+                console.log(testD)
+
+                if ($(cir).parents('.ui-datepicker-other-month').length != 0 || (testD >= new Date()) || ( ($(cir).closest("a").text() == new Date().getDate()) && ($(".ui-datepicker-month").text() == "December") )) {
+                    $(cir).remove()
+                } else {
+
+                    var random = 30 + Math.random() * 100;
+                    $(cir).width(random)
+                    $(cir).height(random)
+                    var distx = (27 - 7 - random / 2) + 'px'
+                    var disty = -54 + 7 + (27 - random / 2) + 'px'
+                    cir.style.transform = "translate(" + distx + "," + disty + ")"
+                }
+
+
+                // setTimeout(()=> {
+                //     $(cir).addClass(".show-circle");
+                // }, i*200);
+
+
+            })
+        }
+
+        $(document).on('click', ".ui-state-default, #panel-calendar, .ui-icon", insertCircle);
+
+
+
+    </script>
+
     <!-- The core Firebase JS SDK is always required and must be listed first -->
     <script src="https://www.gstatic.com/firebasejs/7.5.0/firebase-app.js"></script>
 
@@ -146,4 +184,4 @@
     </script>
 </body>
 
-</html> 
+</html>

@@ -21,18 +21,22 @@ const UPDATE_SPEED = 100;
 const COLOR_ARRAY = ['#C1C6E4', '#FFAD80', '#9C87B8', '#FB7E7E', '#B2DAFF', '#D6FAA8'];
 const WEEK_DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
-function makeList(element, index, list) {
-    $("#entries-list").append()
-}
 
 function preload() {
     readPreviousState();
     pollLatestStateAndFindDiff();
-}
+;}
 
 function setup() {
+    var template = _.template('<div class="entries" ><p class="time"><%= time %></p><p class="volume"><%= volume %></p></div>')
+    var entries_list_setup = [];
+    for (var key in currentState[day_of_week].activities) {
+        entries_list_setup = template({"time": currentState[day_of_week].activities[key].time.split(" ").pop(), "volume":currentState[day_of_week].activities[key].volume + " ml"}) + entries_list_setup
+    }
+    $("#entries-list").append(entries_list_setup);
+
     flower_height = getHeightFromState(currentState);
-    console.log(flower_height);
+    //console.log(flower_height);
     setFlowerHeight(flower_height);
 
     createCanvas(windowWidth, windowHeight);
@@ -50,6 +54,7 @@ function setup() {
 
 function draw() {
     clear();
+
 
     if (millis() > next) {
         if (pending_animation_queue.length > 0 && isGrowing === false) {
@@ -131,10 +136,10 @@ async function pushLatestChangeToAnimationQueue(latestState) {
     // console.log("latest activities: " + JSON.stringify(latest_activities));
     const registered_activity_length = current_activities.length + pending_animation_queue.length;
 
-    console.log("--------------------------")
-    console.log(current_activities.length)
-    console.log(pending_animation_queue.length)
-    console.log(latest_activities.length)
+    // console.log("--------------------------")
+    // console.log(current_activities.length)
+    // console.log(pending_animation_queue.length)
+    // console.log(latest_activities.length)
     if (latest_activities.length < registered_activity_length) {
         throw "Latest state length smaller than previous state. Corrupt data!";
     }
@@ -166,9 +171,13 @@ function getAllDrinkingActivitiesFromState(state) {
     var activities = [];
     WEEK_DAYS.forEach((day) => {
         if (_.has(state, day)) {
-            activities = activities.concat(state[day].activities);
+            if (state[day].activities != undefined) {
+                activities = activities.concat(state[day].activities);
+            }
         }
+        //console.log(activities)
     });
+
     return activities;
 }
 
@@ -195,7 +204,7 @@ function growFlower(volume) {
     by += height * 5 / 7;
 
     var current_total = int($("#total-volume").text());
-    $("#total-volume").html(volume+current_total);
+    $("#total-volume").html(volume + current_total);
     $("#water-text").html("+" + `${volume}` + "ml")
     $("#water-text").addClass("run-drink")
     setTimeout(() => {
