@@ -1,2 +1,4 @@
-# cup_holder_game
-GaTech LMC 6310 Project 3 Fall 2019
+# Stay Hydrated!
+## GaTech LMC 6310 Project 4 Fall 2019
+
+A Smart water cup holder.
