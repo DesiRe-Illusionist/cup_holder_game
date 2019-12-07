@@ -21,13 +21,13 @@ curr_data = -99999
 def write_data():
     global prev_measure, prev_data, curr_data
     while True:
+        time.sleep(0.2)
         curr_time = time.localtime()
         curr_time_string = time.strftime("%Y-%m-%d %H:%M:%S", curr_time)
         day_of_week = time.strftime("%A", curr_time)
         date = time.strftime("%Y-%m-%d", curr_time)
 
         day_of_week_decimal = time.strftime("%w", curr_time)
-        #Firebase
         start_of_week_date = (datetime.now() - timedelta(days=int(day_of_week_decimal))).strftime("%Y-%m-%d")
 
         curr_measure = db.reference('/data').get()

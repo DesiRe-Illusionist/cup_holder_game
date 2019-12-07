@@ -263,7 +263,7 @@ canvas {
 #panel-home .card-face--back .scrolling-box {
   display: block;
   width: 250px;
-  height: 250px;
+  height: 200px;
   padding: 5px;
   overflow-y: scroll;
   text-align: center;
@@ -287,6 +287,26 @@ canvas {
 
 #panel-home .card-face--back .scrolling-box .entries .volume {
   color: #4EB7F8;
+}
+
+#panel-home .card-face--back .scrolling-box-2 {
+  display: flex;
+  justify-content: flex-end;
+  width: 240px;
+  overflow-y: scroll;
+  text-align: center;
+}
+
+#panel-home .card-face--back .scrolling-box-2 .entries {
+  color: #929292;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+#panel-home .card-face--back .scrolling-box-2 .entries p {
+  color: #929292;
 }
 
 #panel-calendar {

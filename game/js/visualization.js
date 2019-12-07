@@ -36,7 +36,6 @@ function setup() {
     $("#entries-list").append(entries_list_setup);
 
     flower_height = getHeightFromState(currentState);
-    //console.log(flower_height);
     setFlowerHeight(flower_height);
 
     createCanvas(windowWidth, windowHeight);
@@ -46,18 +45,20 @@ function setup() {
     blendMode(BLEND);
 }
 
-// lastDrinkTime.setDate(lastDrinkTime.getDate() - 0);
-//lastDrinkTime.setHours(lastDrinkTime.getHours() - 2);
-//lastDrinkTime.setMinutes(lastDrinkTime.getMinutes() - 8);
-//lastDrinkTime.setSeconds(lastDrinkTime.getSeconds() - 12);
-
+function updateTodayList() {
+    var tempHTML = $("#entries-list").html();
+    var template = _.template('<div class="entries" ><p class="time"><%= time %></p><p class="volume"><%= volume %></p></div>')
+    $("#entries-list").html(template({"time": currentState[day_of_week].activities[currentState[day_of_week].activities.length - 1].time.split(" ").pop(), "volume":currentState[day_of_week].activities[currentState[day_of_week].activities.length - 1].volume + " ml"}))
+    $("#entries-list").append(tempHTML)
+}
 
 function draw() {
     clear();
 
-
     if (millis() > next) {
         if (pending_animation_queue.length > 0 && isGrowing === false) {
+            
+
             lastDrinkTime = new Date(0);
             lastDrinkTime.setUTCSeconds(pending_animation_queue[pending_animation_queue.length - 1].time);
             const drinking_activity = pending_animation_queue.shift();
@@ -68,6 +69,7 @@ function draw() {
             currentState[drinking_activity_date].total_volume += drinking_activity.volume;
             putStateAsPreviousState(currentState);
             switchReminderLight(false);
+            updateTodayList();
         }
 
         next = millis() + UPDATE_SPEED;

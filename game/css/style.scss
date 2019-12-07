@@ -277,7 +277,7 @@ $animation-dur: 1.2s;
                     .scrolling-box {
                         display: block;
                         width: 250px;
-                        height: 250px;
+                        height: 200px;
                         padding: 5px;
                         overflow-y: scroll;
                         text-align: center;
@@ -300,6 +300,27 @@ $animation-dur: 1.2s;
                             .volume {
                                 color: #4EB7F8;
                             }
+                        }
+                    }
+
+                    .scrolling-box-2 {
+                        display: flex;
+                        justify-content: flex-end;
+                        width: 240px;
+                        overflow-y: scroll;
+                        text-align: center;
+
+                        .entries {
+                            color:#929292;
+                            width: 100%;
+                            display: flex;
+                            justify-content: space-between;
+                            margin-bottom: 10px;
+                            
+                            p {
+                                color: #929292;
+                            }
+
                         }
                     }
                 }
